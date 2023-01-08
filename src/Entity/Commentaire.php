@@ -27,8 +27,15 @@ class Commentaire
     private ?\DateTimeImmutable $dateCreation = null;
 
     #[ORM\ManyToOne(inversedBy: 'commentaires')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Conference $conference = null;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Conference $conference;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photo = null;
+
+    public function __toString():string{
+        return (string) $this->getEmail();
+    }
 
     public function getId(): ?int
     {
@@ -91,6 +98,18 @@ class Commentaire
     public function setConference(?Conference $conference): self
     {
         $this->conference = $conference;
+
+        return $this;
+    }
+
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?string $photo): self
+    {
+        $this->photo = $photo;
 
         return $this;
     }

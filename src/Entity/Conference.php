@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ConferenceRepository::class)]
 class Conference
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,12 +25,16 @@ class Conference
     #[ORM\Column]
     private ?bool $estInternational = null;
 
-    #[ORM\OneToMany(mappedBy: 'conference', targetEntity: commentaire::class, orphanRemoval: true)]
-    private Collection $commentaires;
+    #[ORM\OneToMany(mappedBy: 'conference', targetEntity: "App\Entity\Commentaire", orphanRemoval: true)]
+    private $commentaires;
 
     public function __construct()
     {
         $this->commentaires = new ArrayCollection();
+    }
+
+    public function __toString():string{
+        return $this->ville.' '.$this->annee;
     }
 
     public function getId(): ?int
