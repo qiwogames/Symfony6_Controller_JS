@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Conference;
+use App\Repository\CommentaireRepository;
+use App\Repository\ConferenceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,13 +13,26 @@ use Symfony\Component\Routing\Annotation\Route;
 class ConferenceController extends AbstractController
 {
     #[Route('/conference', name: 'app_conference')]
-    public function index(Request $request): Response
+    public function index(ConferenceRepository $conferenceRepository): Response
     {
-        $bienvenue = sprintf("<h2>SALUT LES GARS %s!</h2>", htmlspecialchars(""));
-
         return $this->render('conference/index.html.twig', [
-            'controller_name' => 'ConferenceController',
-            'bienvenue' => $bienvenue
+            'conferences' => $conferenceRepository->findAll()
+        ]);
+    }
+
+    //Une conférence => details
+    #[Route('/conference/${id}', name: 'app_conference_details')]
+    public  function detailsConference(Request $request, Conference $conference, CommentaireRepository $commentaireRepository):Response{
+
+        $offset = max(0, $request->query->getInt('offset', 0));
+        $paginator = $commentaireRepository->getCommentairePagination($conference, $offset);
+
+        return $this->render('conference/details-conference.html.twig',[
+            'conference' => $conference,
+            'commentaires' => $paginator,
+            'precedent' => $offset - CommentaireRepository::COMMENTAIRE_PAR_PAGE,
+            'suivant' => min(count($paginator), $offset + CommentaireRepository::COMMENTAIRE_PAR_PAGE)
+
         ]);
     }
 }

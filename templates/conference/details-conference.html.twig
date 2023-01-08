@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ConferenceController!{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <h2>Détails de la {{ conference }}</h2>
+        <div class="alert alert-dark">
+            {% if commentaires | length > 0 %}
+                <h3 class="text-warning">Nombre de commentaires : {{ commentaires|length }}</h3>
+                {% for commentaire in commentaires %}
+                    {% if commentaire.photo %}
+                        <img src="{{ asset('upload/photo/' ~commentaire.photo) }}" alt="{{ commentaire.texte }}"
+                             title="{{ commentaire.texte }}"/>
+                    {% endif %}
+                    <h4 class="text-danger">Auteur : {{ commentaire.auteur }}</h4>
+                    <p class="text-success">Date : {{ commentaire.dateCreation|format_datetime('medium', 'short') }}</p>
+                    <h5 class="text-info">Commentaires : </h5>
+                    <p class="">{{ commentaire.texte }}</p>
+                {% endfor %}
+                {% if precedent >= 0 %}
+                    <a href="{{ path('app_conference_details', {id: conference.id, offset: precedent}) }}" class="btn btn-primary">Précédent</a>
+                {% endif %}
+
+                {% if suivant < commentaires|length %}
+                    <a href="{{ path('app_conference_details', {id: conference.id, offset: suivant}) }}" class="btn btn-primary">Suivant</a>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-danger">Aucun commentaire pour cette conférence !</div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

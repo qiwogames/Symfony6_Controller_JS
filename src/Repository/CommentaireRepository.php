@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Commentaire;
+use App\Entity\Conference;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,6 +18,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CommentaireRepository extends ServiceEntityRepository
 {
+
+    public const COMMENTAIRE_PAR_PAGE = 2;
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Commentaire::class);
@@ -38,6 +42,20 @@ class CommentaireRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    //Creer une pagination des commentaire
+    public function getCommentairePagination(Conference $conference, int $offset):Paginator{
+            $query = $this->createQueryBuilder('c')
+                ->andWhere('c.conference = :conference')
+                ->setParameter('conference', $conference)
+                ->orderBy('c.dateCreation', 'DESC')
+                ->setMaxResults(self::COMMENTAIRE_PAR_PAGE)
+                ->setFirstResult($offset)
+                ->getQuery();
+
+            return  new Paginator($query);
+    }
+
 
 //    /**
 //     * @return Commentaire[] Returns an array of Commentaire objects
